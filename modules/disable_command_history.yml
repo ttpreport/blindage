@@ -1,0 +1,10 @@
+name: "history disabler"
+description: "Disables command history logging"
+category: evasion
+need_root: false
+variables: []
+priority: 0
+tip: ""
+script: |
+  unset HISTFILE HISTSAVE HISTMOVE HISTZONE HISTORY HISTLOG USERHST REMOTEHOST REMOTEUSER
+  export HISTSIZE=0

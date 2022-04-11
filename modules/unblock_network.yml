@@ -1,0 +1,19 @@
+name: "network unblocker"
+description: "Opens ports in ufw and iptables"
+category: persistence
+need_root: true
+variables:
+  - name: ports
+    description: "Comma separated ports list"
+priority: 1000
+tip: "Network port(s) '{{ports}}' are ublocked in ufw and iptables"
+script: |
+  OLD_IFS=$IFS
+  IFS=","
+  for PORT in $(echo "{{ports}}")
+  do
+    ufw allow $PORT
+    iptables -A INPUT -p tcp --dport $PORT -j ACCEPT
+  done
+  IFS=$OLD_IFS
+  unset OLD_IFS

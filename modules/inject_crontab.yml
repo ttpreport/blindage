@@ -1,0 +1,13 @@
+name: "crontab injector"
+description: "Adds a command to crontab"
+category: persistence
+need_root: false
+variables:
+  - name: schedule
+    description: "Schedule for execution (e.g. * * * * *)"
+  - name: cmd
+    description: "Command to execute"
+priority: 1000
+tip: "Command '{{cmd}}' is running via cron with schedule '{{schedule}}'"
+script: |
+  (crontab -l;echo "{{schedule}} {{cmd}}")|crontab 2> /dev/null

